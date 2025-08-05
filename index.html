@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="logo2.png">
+  <title>ตรวจสอบชื่อTUGMOS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="main.css">
+  
+</head>
+
+<body>
+  
+  <div class="container">
+    <div class="header-row">
+    <div class="logo">
+      <img src="IMG_4452 (1).PNG" alt="Logo">
+    </div>
+
+    <div class="text-header">
+      <div class="title">
+        ตรวจสอบชื่อและตำแหน่งที่นั่ง
+      </div>
+      <div class="subtitle">
+        𝐓𝐫𝐢𝐚𝐦 𝐔𝐝𝐨𝐦 𝐆𝐢𝐟𝐭𝐞𝐝 𝐌𝐚𝐭𝐡 𝐎𝐮𝐭𝐬𝐭𝐚𝐧𝐝𝐢𝐧𝐠 𝐒𝐭𝐮𝐝𝐞𝐧𝐭 𝟐𝟎𝟐𝟓<br>
+        By Gifted Math 22, Triam Udom Suksa 87
+      </div>
+    </div></div>
+
+
+    <div class="card">
+      <h2></h2>
+      <div class="form-group">
+        <input type="text" id="testingId" placeholder="กรอกอีเมลที่ใช้ลงทะเบียน">
+        <button id="lookupBtn">ค้นหาที่นั่งสอบ</button>
+      </div>
+      <div class="result" id="resultBox"></div>
+    </div>
+  </div>
+  
+</body>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-analytics.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCl-TFyT35N_g0-DZ9ahyPoby4jkJFlt1I",
+    authDomain: "tugmos-2025.firebaseapp.com",
+    projectId: "tugmos-2025",
+    storageBucket: "tugmos-2025.firebasestorage.app",
+    messagingSenderId: "400520861010",
+    appId: "1:400520861010:web:01bbd9ecca59c021a9d68b",
+    measurementId: "G-8GK1VQ19HG"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const db = getFirestore(app);
+
+  document.getElementById('lookupBtn').addEventListener('click', async () => {
+    const email = document.getElementById('testingId').value.trim().toLowerCase();
+    const resultBox = document.getElementById('resultBox');
+
+    if (!email) {
+      resultBox.innerHTML = `<span style="color: red;">กรุณากรอกอีเมล</span>`;
+      return;
+    }
+
+    try {
+      const docRef = doc(db, "student", email); 
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+  const data = docSnap.data();
+  const list = data.students;
+  const firstStudent = list[0]; // ใช้ข้อมูลครูและโรงเรียนจากคนแรก
+
+let html = `
+  <div style="text-align: left; font-family: 'Sarabun', sans-serif; padding: 10px;">
+    <h3 style="margin-bottom: 0;">${firstStudent.school}</h3>
+    <p style="margin-top: 4px; color: #555;">ครูผู้ควบคุมทีม: ${firstStudent.teacher}</p>
+
+    <table border="1" cellpadding="6" cellspacing="0" style="border-collapse: collapse; width: 100%; margin-top: 12px; font-size: 16px;">
+      <thead style="background-color: #eee;">
+        <tr>
+          <th>ชื่อ - สกุล</th>
+          <th>ห้อง</th>
+          <th>ที่นั่ง</th>
+          <th>รหัสประจำตัว</th>
+        </tr>
+      </thead>
+      <tbody>
+`;
+
+list.forEach(student => {
+  html += `
+        <tr>
+          <td>${student.fullname}</td>
+          <td>${student.room}</td>
+          <td>${student.number}</td>
+          <td>${student.id}</td>
+        </tr>
+  `;
+});
+
+html += `
+      </tbody>
+    </table>
+  </div>
+`;
+
+resultBox.innerHTML = html;
+
+}
+ else {
+        resultBox.innerHTML = `<span style="color: red;">ไม่พบอีเมลนี้ในระบบ</span>`;
+      }
+    } catch (error) {
+      console.error(error);
+      resultBox.innerHTML = `<span style="color: red;">เกิดข้อผิดพลาด: ${error.message}</span>`;
+    }
+  });
+</script>
+
+</html>

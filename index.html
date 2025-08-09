@@ -95,10 +95,11 @@ let html = `
       <tbody>
 `;
 
-list.forEach(student => {
+list.forEach((student, index) => {
+  const team = index < 3 ? "ทีม A" : "ทีม B";
   html += `
         <tr>
-          <td>${student.fullname}</td>
+          <td>${student.fullname} (${team})</td>
           <td>${student.room}</td>
           <td>${student.number}</td>
           <td>${student.id}</td>
@@ -126,3 +127,4 @@ resultBox.innerHTML = html;
 </script>
 
 </html>
+

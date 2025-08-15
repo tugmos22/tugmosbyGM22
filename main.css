@@ -80,6 +80,13 @@ html, body {
   text-align: left;
   line-height: 1.5;
 }
+.maihead{
+  font-size: 14px;
+  font-style: italic;
+  text-align: left;
+  line-height: 1.5;
+  color: red;
+}
 
 .card {
   background: #fff;
